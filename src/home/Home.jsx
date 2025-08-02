@@ -45,20 +45,85 @@ const Home = () => {
       badges: ["Antioxidant", "Versatile"],
     },
   ];
+
+  const features = [
+    {
+      img: "/i-1.jpg",
+      title: "Farm-Fresh Vegetables",
+      description:
+        "Straight from the field to your plate. We bring you the freshest picks of the season, handpicked every morning.",
+    },
+    {
+      img: "/i-2.jpg",
+      title: "100% Organic",
+      description:
+        "Say goodbye to harmful chemicals. All our vegetables are grown using sustainable and organic farming practices.",
+    },
+    {
+      img: "/i-3.png",
+      title: "Super Fast Delivery",
+      description:
+        "Get your veggies delivered in under 60 minutes! We value your time as much as your health.",
+    },
+    {
+      img: "/i-4.jpg",
+      title: "Save More with Us",
+      description:
+        "Affordable prices, no middlemen. We ensure you get premium quality at the lowest market rates.",
+    },
+  ];
   return (
     <div className="flex  flex-col space-y-4">
       <div className="space-y-2 flex w-full justify-between p-4">
-        <div className="text-3xl font-bold text-black text-center justify-center items-center">
+        <div className="text-3xl w-full font-bold text-black text-center justify-center items-center">
           <h1>Todays Products</h1>
         </div>
-        <div>
+        {/* <div>
           <input
             type="text"
             placeholder="Search Products"
             className="input input-bordered input-success w-full max-w-xs bg-white"
           />
+        </div> */}
+      </div>
+      <div>
+        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">
+          Featured Vegetables
+        </h2>
+        <div className="flex flex-1 flex-col align-middle items-center">
+          <div>
+            <h2 className="text-4xl font-bold text-center mb-12 text-green-700">
+              Why Shop With Us?
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-10">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row items-center gap-6 bg-white shadow-lg rounded-xl p-6 hover:scale-105 transition-transform duration-300"
+                >
+                  <img
+                    src={feature.img}
+                    alt={feature.title}
+                    className="w-32 h-32 object-contain"
+                  />
+                  <div>
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-green-400 w-1/2 p-2 text-center text-white font-bold text-2xl mt-8 hover:scale-105 hover:bg-green-700">
+            <button>Buy Now</button>
+          </div>
         </div>
       </div>
+
+      {/* vegetable sets */}
       <div className="w-full grid grid-cols-2 justify-center items-center border-y-2">
         {vegetableDataSet.map((item, index) => (
           <Card

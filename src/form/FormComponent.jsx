@@ -1,6 +1,16 @@
 import { useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const FormComponent = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    area: "",
+    quantity: "",
+    randomString: "",
+  });
+
   const [randomString, setRandomString] = useState("");
 
   // Function to generate a random string
@@ -16,13 +26,6 @@ const FormComponent = () => {
     }
     setRandomString(result);
   };
-  // State to manage form inputs
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    search: "",
-    optionalSearch: "",
-  });
 
   // Handle input change
   const handleChange = (e) => {
@@ -31,17 +34,37 @@ const FormComponent = () => {
       ...formData,
       [name]: value,
     });
+    console.log(formData);
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can perform any desired actions with the form data here
-    console.log("Form Data Submitted:", formData);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { name, price, area, quantity, randomString } = formData;
+
+    const data = { name, price, area, quantity, randomString };
+    console.log("Submitting data:", data);
+
+    try {
+      const response = await axios.post("http://localhost:5001/api/data", data);
+      console.log("Response:", response.data);
+      Swal.fire("Submitted!");
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>',
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 my-4 bg-white">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 my-4 bg-white text-black p-4 rounded-lg shadow-md"
+    >
       <div className="w-full text-center text-4xl font-bold my-8 text-black">
         <h1>Buy product from Farmer</h1>
       </div>
@@ -58,49 +81,50 @@ const FormComponent = () => {
         />
       </label>
 
-      {/* Email Input */}
+      {/* Price Input */}
       <label className="input input-bordered flex items-center gap-2 bg-white">
         Price
         <input
           type="number"
           name="price"
-          value={formData.email}
+          value={formData.price}
           onChange={handleChange}
           className="grow"
-          placeholder="price in bdt"
+          placeholder="Price in BDT"
         />
       </label>
 
-      {/* Search Input with Keyboard Shortcut */}
+      {/* Area Input */}
       <label className="input input-bordered flex items-center gap-2 bg-white">
+        Area
         <input
           type="text"
           name="area"
-          value={formData.search}
+          value={formData.area}
           onChange={handleChange}
           className="grow"
           placeholder="Area"
         />
-        <kbd className="kbd kbd-sm">⌘</kbd>
-        <kbd className="kbd kbd-sm">K</kbd>
       </label>
 
-      {/* Optional Search Input */}
+      {/* Quantity Input */}
       <label className="input input-bordered flex items-center gap-2 bg-white">
+        Quantity
         <input
           type="text"
-          name="optionalSearch"
-          value={formData.optionalSearch}
+          name="quantity"
+          value={formData.quantity}
           onChange={handleChange}
           className="grow"
           placeholder="Quantity"
         />
-        <span className="badge badge-info">Optional</span>
       </label>
-      {/* for experiment */}
+
+      {/* Random String Generator */}
       <div className="input input-bordered flex items-center gap-2 bg-white">
         <input
           type="text"
+          name="randomString"
           value={randomString}
           placeholder="Generated String"
           readOnly
