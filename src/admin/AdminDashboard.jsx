@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import UsersTable from "./UsersTable";
+import AdminUsersData from "./AdminUsersData";
 
 export default function AdminDashboard() {
   const { API } = useAuth();
@@ -118,6 +120,12 @@ export default function AdminDashboard() {
           Placeholder for future D2 sales transaction tracking and analytics.
         </div>
       </section>
+      <div>
+        <UsersTable />
+      </div>
+      <div>
+        <AdminUsersData />
+      </div>
     </div>
   );
 }
