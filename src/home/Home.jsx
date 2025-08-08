@@ -1,4 +1,6 @@
 import Card from "../card/Card";
+import VegetableSlider from "../components/VegetableSlider";
+import MLPredictor from "../machine/MLPredictor";
 
 const Home = () => {
   const vegetableDataSet = [
@@ -73,7 +75,7 @@ const Home = () => {
     },
   ];
   return (
-    <div className="flex  flex-col space-y-4">
+    <div className="flex  flex-col space-y-4 my-8">
       <div className="space-y-2 flex w-full justify-between p-4">
         <div className="text-3xl w-full font-bold text-black text-center justify-center items-center">
           <h1>Todays Products</h1>
@@ -93,7 +95,7 @@ const Home = () => {
         <div className="flex flex-1 flex-col align-middle items-center">
           <div>
             <h2 className="text-4xl font-bold text-center mb-12 text-green-700">
-              Why Shop With Us?
+              Know Daily Prices with Us
             </h2>
 
             <div className="grid md:grid-cols-2 gap-10">
@@ -117,10 +119,17 @@ const Home = () => {
               ))}
             </div>
           </div>
-          <div className="bg-green-400 w-1/2 p-2 text-center text-white font-bold text-2xl mt-8 hover:scale-105 hover:bg-green-700">
+          {/* <div className="bg-green-400 w-1/2 p-2 text-center text-white font-bold text-2xl mt-8 hover:scale-105 hover:bg-green-700">
             <button>Buy Now</button>
+          </div> */}
+
+          <div>
+            <VegetableSlider />
           </div>
         </div>
+      </div>
+      <div>
+        <MLPredictor></MLPredictor>
       </div>
 
       {/* vegetable sets */}

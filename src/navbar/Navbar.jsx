@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 
+import { useAuth } from "../context/AuthContext";
+
 const Navbar = () => {
+  const { user, isLoggedIn, logout } = useAuth();
   return (
     <div>
       <div className="navbar bg-green-800 mb-4 text-white">
@@ -33,6 +36,9 @@ const Navbar = () => {
               <li>
                 <Link to={"/buy_form"}>Buy</Link>
               </li>
+              <li>
+                <Link to={"/login"}>Login</Link>
+              </li>
             </ul>
           </div>
           <a className="btn btn-ghost text-xl">daisyUI</a>
@@ -46,12 +52,27 @@ const Navbar = () => {
             <li>
               <Link to={"/buy_form"}>Buy</Link>
             </li>
+            <li>
+              <Link to={"/admin"}>Admin</Link>
+            </li>
+            <li>
+              {user ? (
+                <a onClick={logout}>Logout</a>
+              ) : (
+                <Link to={"/login"}>Login</Link>
+              )}
+            </li>
           </ul>
         </div>
         <div className="navbar-end">
           <a className="btn btn-primary text-white">
             {" "}
-            <Link to={"/login"}>Login</Link>{" "}
+            {/* {isLoggedIn ? (
+              <Link onClick={"logout"}>Logout</Link>
+            ) : (
+              <Link to={"/login"}>Login</Link>
+            )} */}
+            <Link to={"/login"}>Profile</Link>
           </a>
         </div>
       </div>

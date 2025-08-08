@@ -3,6 +3,7 @@ import Layout from "../layout/Layout";
 import Home from "../home/Home";
 import FormComponent from "../form/FormComponent";
 import Login from "../login/Login.jsx";
+import AdminDashboard from "../admin/AdminDashboard.jsx";
 
 const Routes = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const Routes = createBrowserRouter([
       {
         path: "/login",
         element: <Login></Login>,
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboard></AdminDashboard>,
       },
     ],
   },

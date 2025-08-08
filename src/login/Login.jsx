@@ -1,70 +1,46 @@
 import { useState } from "react";
-import axios from "axios";
-import "daisyui";
+import { useAuth } from "../context/AuthContext.jsx";
 import TermsAndConditions from "../components/TermsAndConditions";
-
-const API = axios.create({
-  baseURL: "http://localhost:5001/api",
-});
-
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
 
 export default function App() {
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({});
-  const [message, setMessage] = useState("");
-  const [user, setUser] = useState(null);
+  const [dataMessage, setDataMessage] = useState("");
+  const {
+    user,
+    isLoggedIn,
+    login,
+    register,
+    logout,
+    message,
+    fetchProfile,
+    API,
+  } = useAuth();
+
+  console.log("User:", user);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleAuth = async (endpoint) => {
-    try {
-      const res = await API.post(`/${endpoint}`, form);
-      if (endpoint === "login") {
-        localStorage.setItem("token", res.data.token);
-        setUser(res.data.user);
-        setMode("data");
-      } else {
-        setMessage("Registration successful! Please login.");
-        setMode("login");
-      }
-    } catch (err) {
-      setMessage(err.response?.data?.error || "Error");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (mode === "register") {
+      const res = await register(form);
+      if (res.success) setMode("login");
+    } else {
+      const res = await login(form);
+      if (res.success) setMode("data");
     }
   };
 
   const handleInsertData = async () => {
     try {
       const res = await API.post("/data", { value: form.value });
-      setMessage("Data inserted: " + JSON.stringify(res.data.data));
+      setDataMessage("Data inserted: " + JSON.stringify(res.data.data));
     } catch (err) {
-      setMessage("Insert failed: " + err.response?.data?.message);
+      setDataMessage("Insert failed: " + err.response?.data?.message);
     }
-  };
-
-  const fetchProfile = async () => {
-    try {
-      const res = await API.get("/me");
-      setUser(res.data);
-      setMessage("");
-    } catch (err) {
-      setMessage("Token invalid or expired");
-      localStorage.removeItem("token");
-      setUser(null);
-      setMode("login");
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setMode("login");
   };
 
   return (
@@ -79,8 +55,7 @@ export default function App() {
           backgroundAttachment: "fixed",
         }}
       >
-        {/* Optional overlay */}
-        <div className=" w-full h-full bg-cover  bg-white/60 z-10"></div>
+        <div className=" w-full h-full bg-cover bg-white/60 z-10"></div>
 
         <div className=" relative z-20 w-full max-w-md shadow-xl bg-gray-800 rounded-lg p-6">
           <h2 className="text-2xl text-white font-bold text-center mb-4">
@@ -93,50 +68,26 @@ export default function App() {
               : "Insert Data"}
           </h2>
 
-          {mode === "register" && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleAuth("register");
-              }}
-              className="form-control space-y-3 "
-            >
-              <input
-                name="name"
-                placeholder="Name"
-                onChange={handleChange}
-                required
-                className="input input-bordered"
-              />
-              <input
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-                required
-                className="input input-bordered bg-slate-500 text-white"
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                onChange={handleChange}
-                required
-                className="input input-bordered bg-slate-500 text-white"
-              />
-              <button type="submit" className="btn btn-primary">
-                Register
-              </button>
-            </form>
-          )}
-
-          {mode === "login" && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleAuth("login");
-              }}
-              className="form-control space-y-3"
-            >
+          {(mode === "register" || mode === "login") && (
+            <form onSubmit={handleSubmit} className="form-control space-y-3">
+              {mode === "register" && (
+                <input
+                  name="name"
+                  placeholder="Name"
+                  onChange={handleChange}
+                  required
+                  className="input input-bordered"
+                />
+              )}{" "}
+              {mode === "register" && (
+                <input
+                  name="dealerType"
+                  placeholder="Dealer Type (D1/D2)"
+                  onChange={handleChange}
+                  required
+                  className="input input-bordered bg-slate-500 text-white"
+                />
+              )}
               <input
                 name="email"
                 placeholder="Email"
@@ -153,7 +104,7 @@ export default function App() {
                 className="input input-bordered bg-slate-500 text-white"
               />
               <button type="submit" className="btn btn-primary">
-                Login
+                {mode === "register" ? "Register" : "Login"}
               </button>
             </form>
           )}
@@ -186,57 +137,62 @@ export default function App() {
               </button>
               {user && (
                 <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto">
-                  {/* {JSON.stringify(user, null, 2)} */}
                   <h1 className=" text-black ">{user.name}</h1>
                   <h3 className=" text-gray-800">{user.email}</h3>
+                  <h3 className=" text-gray-800">
+                    {user.dealerType ? user.dealerType : ""}
+                  </h3>
                 </pre>
               )}
             </div>
           )}
 
-          {message && (
-            <p className="mt-4 text-center text-red-600">{message}</p>
+          {(message || dataMessage) && (
+            <p className="mt-4 text-center text-red-600">
+              {message || dataMessage}
+            </p>
           )}
 
           <hr className="my-4" />
 
           <div className="flex justify-around">
-            {!user && (
-              <button
-                onClick={() => setMode("register")}
-                className="btn btn-sm"
-              >
-                Register
-              </button>
+            {!isLoggedIn && (
+              <>
+                <button
+                  onClick={() => setMode("register")}
+                  className="btn btn-sm"
+                >
+                  Register
+                </button>
+                <button onClick={() => setMode("login")} className="btn btn-sm">
+                  Login
+                </button>
+              </>
             )}
-            {!user && (
-              <button onClick={() => setMode("login")} className="btn btn-sm">
-                Login
-              </button>
-            )}
-            {user && (
-              <button onClick={() => setMode("data")} className="btn btn-sm">
-                Insert
-              </button>
-            )}
-            {user && (
-              <button onClick={() => setMode("profile")} className="btn btn-sm">
-                Profile
-              </button>
-            )}
-            {user && (
-              <button
-                onClick={logout}
-                className="btn btn-sm btn-outline btn-error"
-              >
-                Logout
-              </button>
+            {isLoggedIn && (
+              <>
+                <button onClick={() => setMode("data")} className="btn btn-sm">
+                  Insert
+                </button>
+                <button
+                  onClick={() => setMode("profile")}
+                  className="btn btn-sm"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={logout}
+                  className="btn btn-sm btn-outline btn-error"
+                >
+                  Logout
+                </button>
+              </>
             )}
           </div>
         </div>
       </div>
       <div className="m-4">
-        <TermsAndConditions></TermsAndConditions>
+        <TermsAndConditions />
       </div>
     </>
   );

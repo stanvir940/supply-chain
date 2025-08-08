@@ -5,9 +5,9 @@ import Footer from "../footer/Footer";
 
 const Layout = () => {
   return (
-    <div className="bg-white">
+    <div className="bg-[#ffffff]">
       <Navbar></Navbar>
-      <div className="max-w-5xl mx-auto border-x-2 overflow-hidden">
+      <div className="max-w-5xl mx-auto bg-[#fefefe] overflow-hidden p-4">
         <Outlet></Outlet>
       </div>
       <div className="w-full mx-auto">
